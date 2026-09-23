@@ -506,14 +506,13 @@
       { id: 'pacotinhos', label: 'Pacotinhos' }
     ];
 
-    // MANTIDO: HANDOVER, DONO DE RUA E CARD XPT
+    // ATUALIZADO: HANDOVER, DONO DE RUA E XPT AGORA EXPANDIDOS PARA ATÉ 7 PESSOAS
     const funcoesExtrasRec = [
-      { id: 'handover', label: 'HANDOVER', qtd: 4 },
-      { id: 'dono_rua', label: 'DONO DE RUA', qtd: 4 },
-      { id: 'xpt', label: 'XPT', qtd: 4 }
+      { id: 'handover', label: 'HANDOVER', qtd: 7 },
+      { id: 'dono_rua', label: 'DONO DE RUA', qtd: 7 },
+      { id: 'xpt', label: 'XPT', qtd: 7 }
     ];
 
-    // TRATATIVA REMOVIDA DOS CARDS EXTRAS (POIS AGORA É A MESA 7)
     const funcoesDC = [
       { id: 'puxar_gaiolas', label: 'PUXAR GAIOLAS', qtd: 4 },
       { id: 'pacotinhos', label: 'PACOTINHOS', qtd: 4 }
@@ -1117,7 +1116,7 @@
         }
       }
 
-      funcoesExtrasRec.filter(ext => ext.id !== 'xpt').forEach(ext => {
+      funcoesExtrasRec.forEach(ext => {
         for (let i = 1; i <= ext.qtd; i++) {
           const candidatos = [...window.colaboradores].sort(() => Math.random() - 0.5);
           const escolhido = obterProximoDisponivel(candidatos, jaAlocadosNoDia, usoFuncaoSemana, ext.id, dia, 3);
