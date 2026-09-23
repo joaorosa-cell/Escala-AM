@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sistema de Escalas Avançado Pro - Seg a Sáb</title>
+  <title>Sistema de Escalas Avançado Pro - Seg a Dom</title>
   
   <!-- Bibliotecas Externas -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -110,6 +110,7 @@
     .day-header.quinta { background: #059669; }
     .day-header.sexta { background: #d97706; }
     .day-header.sabado { background: #dc2626; }
+    .day-header.domingo { background: #475569; }
 
     .btn-sm { padding: 3px 8px; font-size: 10px; border-radius: 4px; }
 
@@ -200,7 +201,7 @@
 
   <!-- TOP BAR -->
   <div class="top-bar">
-    <h1>Gerenciador de Escalas Pro (Segunda a Sábado)</h1>
+    <h1>Gerenciador de Escalas Pro (Segunda a Domingo)</h1>
     <div class="action-buttons">
       <span id="storageStatus" class="status-badge status-saved">🟢 Armazenado Localmente</span>
       <button class="btn btn-outline-yellow admin-only" onclick="abrirModalSkills()">🎯 Skills / Competências</button>
@@ -269,13 +270,14 @@
             <div class="ver-dia-selector">
               <label for="filtroVerDia">Ver Dia:</label>
               <select id="filtroVerDia" class="ver-dia-select" onchange="aoMudarFiltroEscala()">
-                <option value="todos">Todos os Dias (Seg-Sáb)</option>
+                <option value="todos">Todos os Dias (Seg-Dom)</option>
                 <option value="segunda">Segunda</option>
                 <option value="terca">Terça</option>
                 <option value="quarta">Quarta</option>
                 <option value="quinta">Quinta</option>
                 <option value="sexta">Sexta</option>
                 <option value="sabado">Sábado</option>
+                <option value="domingo">Domingo</option>
               </select>
             </div>
           </div>
@@ -301,7 +303,7 @@
       <div class="pivot-header-toolbar">
         <div>
           <h2 style="margin:0; font-size: 15px; color:#60a5fa;">📊 Matriz de Distribuição Semanal por Operador</h2>
-          <p style="margin: 3px 0 0 0; font-size: 11px; color:#94a3b8;">Acompanhe a quantidade total de vezes que cada operador passou por determinada função no ciclo atual (Segunda a Sábado).</p>
+          <p style="margin: 3px 0 0 0; font-size: 11px; color:#94a3b8;">Acompanhe a quantidade total de vezes que cada operador passou por determinada função no ciclo atual (Segunda a Domingo).</p>
         </div>
         <div>
           <label style="font-size: 11px; color: #94a3b8; font-weight: bold;">Analisar Setor:</label>
@@ -339,7 +341,7 @@
           <label style="font-size: 11px; color: #94a3b8; font-weight: bold;">Selecione o Intervalo a Imprimir:</label><br>
           <select id="printEscalaSelect" class="filter-select" style="font-size: 12px; padding: 5px;">
             <option value="dia_selecionado">Dia Selecionado (Filtro 'Ver Dia')</option>
-            <option value="todas">Semana Completa (Seg a Sáb)</option>
+            <option value="todas">Semana Completa (Seg a Dom)</option>
           </select>
         </div>
         <div>
@@ -471,9 +473,9 @@
   </script>
 
   <script>
-    // FIXO: Todos trabalham de segunda a sábado
-    const diasSemana = ['segunda', 'terca', 'quarta', 'quinta', 'sexta', 'sabado'];
-    const nomesDias = { segunda: 'Segunda', terca: 'Terça', quarta: 'Quarta', quinta: 'Quinta', sexta: 'Sexta', sabado: 'Sábado' };
+    // FIXO: Segunda a Domingo
+    const diasSemana = ['segunda', 'terca', 'quarta', 'quinta', 'sexta', 'sabado', 'domingo'];
+    const nomesDias = { segunda: 'Segunda', terca: 'Terça', quarta: 'Quarta', quinta: 'Quinta', sexta: 'Sexta', sabado: 'Sábado', domingo: 'Domingo' };
 
     let abaAtual = 'recebimento';
     window.perfilAtual = 'espectador';
@@ -988,7 +990,7 @@
       if (window.perfilAtual !== 'admin') return;
       const setor = (abaAtual === 'recebimento') ? 'Recebimento Geral' : 'Double Check';
       
-      if (confirm(`Tem certeza que deseja LIMPAR TODOS OS DIAS (Seg a Sáb) do ${setor}?`)) {
+      if (confirm(`Tem certeza que deseja LIMPAR TODOS OS DIAS (Seg a Dom) do ${setor}?`)) {
         diasSemana.forEach(dia => {
           if (abaAtual === 'recebimento') {
             window.escalaRecebimento[dia] = {};
@@ -1386,7 +1388,7 @@
       captureArea.innerHTML = '';
 
       let htmlPrint = `<div style="display: flex; flex-direction: column; gap: 20px;">`;
-      htmlPrint += `<h2 style="text-align: center; color: #60a5fa; margin: 0 0 10px 0; font-size: 22px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px;">ESCALA SEGUNDA A SÁBADO - ${setor === 'rec' ? 'RECEBIMENTO GERAL' : 'DOUBLE CHECK'}</h2>`;
+      htmlPrint += `<h2 style="text-align: center; color: #60a5fa; margin: 0 0 10px 0; font-size: 22px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px;">ESCALA SEGUNDA A DOMINGO - ${setor === 'rec' ? 'RECEBIMENTO GERAL' : 'DOUBLE CHECK'}</h2>`;
 
       let diasParaImprimir = (modoPrint === 'dia_selecionado') ? [verDiaVal] : diasSemana;
 
@@ -1450,7 +1452,7 @@
           img.style.border = '1px solid #334155';
           previewBox.appendChild(img);
 
-          const nomeArquivo = `Escala_${setor.toUpperCase()}_Seg_Sab.png`;
+          const nomeArquivo = `Escala_${setor.toUpperCase()}_Seg_Dom.png`;
 
           const btnDownload = document.getElementById('downloadImageBtn');
           btnDownload.href = canvas.toDataURL('image/png', 1.0);
