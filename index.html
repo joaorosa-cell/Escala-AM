@@ -221,7 +221,8 @@
     </div>
     <div class="login-box">
       <div id="loginForm">
-        <input type="password" id="adminPasswordInput" class="login-input" placeholder="Senha Admin">
+        <!-- Input de senha com evento 'onkeypress' para aceitar a tecla Enter -->
+        <input type="password" id="adminPasswordInput" class="login-input" placeholder="Senha Admin" onkeypress="if(event.key === 'Enter') entrarComoAdmin()">
         <button class="btn btn-blue-solid" onclick="entrarComoAdmin()">Entrar como Admin</button>
       </div>
       <button id="btnLogout" class="btn btn-outline-red" style="display: none;" onclick="sairParaEspectador()">Sair do Modo Admin</button>
@@ -375,7 +376,7 @@
     window.carregarDadosLocais = function() {};
   </script>
 
-  <!-- VERSÃO DO FIREBASE CORRIGIDA (10.12.2 em vez de 13.0.0 que não existia) -->
+  <!-- VERSÃO DO FIREBASE -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
@@ -405,7 +406,7 @@
       }
     }
 
-    // Salva na nuvem ao ser acionado
+    // Salva na nuvem ao ser acionado - GARANTIDO PARA TODAS AS FUNÇÕES DE RESET/EDIÇÃO
     window.agendarAutoSave = function() {
       atualizarStatus(" Sincronizando...", "status-saving");
      
@@ -438,6 +439,12 @@
           window.skillsColaboradores = data.skillsColaboradores || {};
           window.escalaRecebimento = data.escalaRecebimento || {};
           window.escalaDoubleCheck = data.escalaDoubleCheck || {};
+        } else {
+          // Se o Firebase retornar null (banco vazio), limpa o frontend
+          window.colaboradores = [];
+          window.skillsColaboradores = {};
+          window.escalaRecebimento = {};
+          window.escalaDoubleCheck = {};
         }
 
         // Garante a existência da estrutura base dos dias para evitar quebras
@@ -999,7 +1006,7 @@
       if (window.perfilAtual !== 'admin') return;
       const setor = (abaAtual === 'recebimento') ? 'Recebimento Geral' : 'Double Check';
      
-      if (confirm(`Tem certeza que deseja LIMPAR TODOS OS DIAS (Seg a Dom) do ${setor}?`)) {
+      if (confirm(`Tem certeza que deseja LIMPAR TODOS OS DIAS (Seg a Dom) do ${setor}? As alterações serão guardadas na nuvem.`)) {
         diasSemana.forEach(dia => {
           if (abaAtual === 'recebimento') {
             window.escalaRecebimento[dia] = {};
@@ -1306,6 +1313,7 @@
       if (window.perfilAtual !== 'admin') return;
       if (confirm('Tem certeza que deseja apagar TODOS os colaboradores e zerar as escalas?')) {
         window.colaboradores = [];
+        window.skillsColaboradores = {};
         diasSemana.forEach(dia => {
           window.escalaRecebimento[dia] = {};
           window.escalaDoubleCheck[dia] = {};
