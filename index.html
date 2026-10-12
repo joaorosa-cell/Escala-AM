@@ -438,6 +438,14 @@
           window.escalaDoubleCheck = data.escalaDoubleCheck || {};
         }
 
+        // FIX CRÍTICO: O Firebase apaga chaves vazias.
+        // Garantimos aqui que os dias da semana existem sempre na memória para não gerar erros.
+        const diasSemana = ['segunda', 'terca', 'quarta', 'quinta', 'sexta', 'sabado', 'domingo'];
+        diasSemana.forEach(dia => {
+          if (!window.escalaRecebimento[dia]) window.escalaRecebimento[dia] = {};
+          if (!window.escalaDoubleCheck[dia]) window.escalaDoubleCheck[dia] = {};
+        });
+
         // Renderiza tudo novamente na tela
         if (window.renderEstruturas) {
           window.renderEstruturas();
