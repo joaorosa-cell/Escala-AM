@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-PT">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -207,6 +207,8 @@
       <button class="btn btn-outline-blue" onclick="abrirModalPrint()"> Imagem (.png HD)</button>
       <button class="btn btn-outline-purple admin-only" onclick="sortearSemana()"> Sortear Escala</button>
       <button class="btn btn-outline-red admin-only" onclick="resetarSemanaAtual()"> Limpar Escala</button>
+      <!-- NOVO BOTÃO DE RESET TOTAL -->
+      <button class="btn btn-red-solid admin-only" onclick="resetarSistemaCompleto()"> Resetar Tudo (Banco)</button>
     </div>
   </div>
 
@@ -373,10 +375,10 @@
     window.carregarDadosLocais = function() {};
   </script>
 
-  <!-- GERENCIADOR FIREBASE PARA ARMAZENAMENTO EM TEMPO REAL -->
+  <!-- VERSÃO DO FIREBASE CORRIGIDA (10.12.2 em vez de 13.0.0 que não existia) -->
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-app.js";
-    import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-database.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyAMa4_KYA6GEKgBdAZQi-S3-kPRU0w4iIk",
@@ -438,8 +440,7 @@
           window.escalaDoubleCheck = data.escalaDoubleCheck || {};
         }
 
-        // FIX CRÍTICO: O Firebase apaga chaves vazias.
-        // Garantimos aqui que os dias da semana existem sempre na memória para não gerar erros.
+        // Garante a existência da estrutura base dos dias para evitar quebras
         const diasSemana = ['segunda', 'terca', 'quarta', 'quinta', 'sexta', 'sabado', 'domingo'];
         diasSemana.forEach(dia => {
           if (!window.escalaRecebimento[dia]) window.escalaRecebimento[dia] = {};
@@ -463,7 +464,6 @@
 
   <!-- LÓGICA PRINCIPAL DO SISTEMA -->
   <script>
-    // FIXO: Segunda a Domingo
     const diasSemana = ['segunda', 'terca', 'quarta', 'quinta', 'sexta', 'sabado', 'domingo'];
     const nomesDias = { segunda: 'Segunda', terca: 'Terça', quarta: 'Quarta', quinta: 'Quinta', sexta: 'Sexta', sabado: 'Sábado', domingo: 'Domingo' };
 
@@ -471,7 +471,6 @@
     window.perfilAtual = 'espectador';
     const SENHA_ADMIN = "1013";
 
-    // MANTIDO: 10 MESAS DIVIDIDAS EM 5 PARES PARA O RECEBIMENTO GERAL
     const paresMesas = [
       { id: 'm1_2', label: 'Mesa 1 e Mesa 2' },
       { id: 'm3_4', label: 'Mesa 3 e Mesa 4' },
@@ -496,7 +495,6 @@
       { id: 'pacotinhos', label: 'Pacotinhos' }
     ];
 
-    // ATUALIZADO: HANDOVER, DONO DE RUA E XPT AGORA EXPANDIDOS PARA ATÉ 7 PESSOAS
     const funcoesExtrasRec = [
       { id: 'handover', label: 'HANDOVER', qtd: 7 },
       { id: 'dono_rua', label: 'DONO DE RUA', qtd: 7 },
@@ -522,6 +520,28 @@
       if (!window.escalaRecebimento[dia]) window.escalaRecebimento[dia] = {};
       if (!window.escalaDoubleCheck[dia]) window.escalaDoubleCheck[dia] = {};
     });
+
+    /* FUNÇÃO DE RESET TOTAL */
+    window.resetarSistemaCompleto = function() {
+      if (window.perfilAtual !== 'admin') return;
+     
+      const confirmacao = confirm("ATENÇÃO: Esta ação irá APAGAR definitivamente TODOS os colaboradores, matriz de competências e as escalas atuais do servidor Firebase. Deseja realmente zerar o sistema completamente?");
+     
+      if (confirmacao) {
+        window.colaboradores = [];
+        window.skillsColaboradores = {};
+       
+        diasSemana.forEach(dia => {
+          window.escalaRecebimento[dia] = {};
+          window.escalaDoubleCheck[dia] = {};
+        });
+       
+        window.renderEstruturas();
+        if (window.agendarAutoSave) window.agendarAutoSave();
+       
+        alert("Sistema completamente limpo e guardado na nuvem.");
+      }
+    };
 
     /* GERENCIAMENTO DE PERFIL DE ACESSO */
     function entrarComoAdmin() {
